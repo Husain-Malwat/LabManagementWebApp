@@ -37,12 +37,20 @@ This lab management website, created by SQL Dummies, is a platform designed to o
 4. Run the SQL script in the MySQL Workbench:
     - Go to File > Run SQL script.. choose the .sql file([sql script](src\bookings.sql), and click Run.
     <img src="images\setup\sql_script.png" alt="sql"  >
-    <br>
-      **Note:** The database should be visible in navigation pane: <img src="images\setup\navigation.png" alt="navigation_pane"  >
-    <br>
+    
+      **Note:** The database should be visible in navigation pane:
+      
+      <img src="images\setup\navigation.png" alt="navigation_pane"  >
+
     - This script will create a database called lab_bookings, corresponding tables, and it will insert some pre-required data into the tables.
   <br><br>
-5. Run the app.py code. 
+
+4. Install the required packages
+    <br>
+    <code>pip install -r requirement.txt</code>
+6. For convinience, you can also use venv(Python virtual environment)
+7. Make sure MySql is installed in you system.
+8. Run the app.py code. 
     <br>
     <code>python app.py</code>
 
