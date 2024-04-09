@@ -18,8 +18,8 @@ app = Flask(__name__)
 app.secret_key = "abcd2123445"
 app.config["MYSQL_HOST"] = "127.0.0.1"
 app.config["MYSQL_PORT"] = 3306
-app.config["MYSQL_USER"] = "thor"
-app.config["MYSQL_PASSWORD"] = "mjonir"
+app.config["MYSQL_USER"] = "root"
+app.config["MYSQL_PASSWORD"] = ""
 app.config["MYSQL_DB"] = "lab_bookings"
 
 mysql = MySQL(app)
@@ -945,7 +945,6 @@ def get_equipment():
         if equipment[0] == selectedValue:
             equip_det = fetch_equip_details(selectedValue)
             return jsonify({"equipment": equipment, "details": equip_det}), 200
-
     return jsonify({"error": "Bad Request"}), 400
 
 
@@ -961,6 +960,7 @@ def check_lab():
         (data["lab"], data["date"], data["time_slot"]),
     )
     existing_booking = cur.fetchone()
+    cur.close()
     if existing_booking:
         return jsonify({"Availability": "False"}), 400
     return jsonify({"Availability": "True"}), 400
@@ -997,8 +997,24 @@ def check_equipment():
             ),
             400,
         )
+    cur.close()
     return jsonify({"Availability": "True"}), 400
 
+@app.route("/api/get_inventory", methods=["POST"])
+def get_inventory():
+    if "loggedin" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.get_json()
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM inventory WHERE Lab_Name = %s", (data["lab"],))
+    inventory = cur.fetchall()
+    cur.close()
+    return jsonify({"inventory": inventory}), 200
+
+@app.route("/inventory")
+def inventory_site():
+    return render_template("inventory.html")
 
 def fetch_all():
     cur = mysql.connection.cursor()
@@ -1016,7 +1032,7 @@ def fetch_all():
     accessed_tool = cur.fetchall()  # Fetch all rows
     cur.execute("SELECT * FROM course_slot")
     course_slot = cur.fetchall()  # Fetch all rows
-
+    cur.close()
     return (
         lab_bookings,
         equipment_issued,

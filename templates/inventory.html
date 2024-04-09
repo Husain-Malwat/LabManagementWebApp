@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Management</title>
+  <!-- Include Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../static/styles/output.css">
+  <style>
+    /* Add your custom CSS styles here */
+    body {
+      background-color: #f3f4f6;
+      /* Light grey background */
+    }
+
+    /* Style for the navbar */
+    .navbar {
+      background-color: #4a5568;
+      /* Dark grey navbar */
+    }
+
+    /* Style for the form */
+    .form-container {
+      background-color: #fff;
+      /* White background for the form */
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="text-gray-600 body-font shadow-lg bg-white">
+    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+      <div class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+        <img src="../static/images/logo.png" alt="logo" class="w-1/12 mr-4">
+        <h1 class="text-2xl font-bold">Lab Management</h1>
+      </div>
+
+      <ul class="md:ml-auto flex flex-wrap text-base float-right">
+        <li><a href="profile" class="mr-5 hover:text-gray-900">Profile</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Lab/Equipment Selection -->
+  <div class="container mx-auto p-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl">Inventory</h1>
+    </div>
+
+    <!-- Lab Booking Form -->
+    <form id="labSelectionForm" class="form-container shadow-md rounded px-8 pt-6 pb-8 mt-8 mb-8">
+      <div class="mb-4">
+        <label for="Lab_Name" class="block text-gray-700 font-bold mb-2">Lab Name:</label>
+        <select name="Lab_Name" id="Lab_Name"
+          class="form-select mt-1 block px-2 py-1 bg-white border border-gray-300 rounded-md shadow-sm w-1/3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <option value="Anatomy Lab"> Anatomy Lab</option>
+          <option value="Biochemistry Lab">Biochemistry Lab</option>
+          <option value="Biology Lab">Biology Lab</option>
+          <option value="Botany Lab">Botany Lab</option>
+          <option value="Chemistry Lab">Chemistry Lab</option>
+          <option value="Computer Lab">Computer Lab</option>
+          <option value="Ecology Lab">Ecology Lab</option>
+          <option value="Engineering Lab">Engineering Lab</option>
+          <option value="Genetics Lab">Genetics Lab</option>
+          <option value="Geology Lab">Geology Lab</option>
+          <option value="Microbiology Lab">Microbiology Lab</option>
+          <option value="Neuroscience Lab">Neuroscience Lab</option>
+          <option value="Physics Lab">Physics Lab</option>
+          <option value="Psychology Lab">Psychology Lab</option>
+          <option value="Zoology Lab">Zoology Lab</option>
+        </select>
+      </div>
+      <div class="text-center">
+        <button type="submit" onclick="getInventory(event)"
+          class="border border-green-700 bg-green-700 hover:border-green-600 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out">Get
+          Items</button>
+      </div>
+    </form>
+
+
+    <div class="mb-8" class="hidden" id="tableDiv">
+      <h2 class="text-xl font-bold mb-2">Items List</h2>
+      <div class="overflow-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Equipment ID</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Equipment Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Is Available</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Quantity</th>
+              <!-- <th scope="col"
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Equipment ID</th> -->
+              <!-- <th scope="col"
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Return by</th> -->
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200" id="inventoryList">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      async function get_data(url = "", data = {}) {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        return response.json();
+      }
+
+      function addRow(item, row) {
+        to_add = [item[0], item[1], item[6], item[8]];
+        to_add.forEach((data) => {
+          var cell = row.insertCell();
+          if (data == null) {
+            data = "N/A";
+          }
+          cell.innerHTML = data;
+          cell.classList.add('px-6', 'py-4', 'whitespace-nowrap');
+        });
+      }
+
+      function getInventory(event) {
+        const lab = document.getElementById('Lab_Name').value;
+        const data_dict = { lab: lab };
+
+        event.preventDefault();
+        get_data(url = "/api/get_inventory", data = data_dict)
+          .then(data => {
+            console.log(data);
+            document.getElementById('tableDiv').classList.remove('hidden');
+            const inventory = data.inventory;
+            var inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
+            inventory.forEach(item => {
+              var row = inventoryList.insertRow();
+              addRow(item, row);
+            });
+          })
+          .catch(error => {
+            console.log(error);
+            if (error == 'Unauthorized') {
+              window.location.href = '/login';
+            }
+          });
+      }
+
+    </script>
+
+
+
+
+</body>
+
+</html>

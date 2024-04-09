@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab Management</title>
     <!-- Include Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> 
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="output.css" rel="stylesheet">
     <style>
         /* Add your custom CSS styles here */
@@ -34,7 +34,8 @@
     <nav class="text-gray-600 body-font shadow-lg bg-white">
         <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
             <div class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTP8BjSsGYnOeIFaSgjqS04Uv76aH5Kx7aklQ&s" alt="logo" class="w-1/12 mr-4">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTP8BjSsGYnOeIFaSgjqS04Uv76aH5Kx7aklQ&s"
+                    alt="logo" class="w-1/12 mr-4">
                 <h1 class="text-2xl font-bold">Lab Management</h1>
             </div>
 
@@ -54,8 +55,8 @@
             <div class="flex justify-center flex-wrap">
                 <div class="">
                     <button id="bookingsBtn"
-                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">  
-                         <a href="admintables/bookings">Book Lab</a>
+                        class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
+                        <a href="admintables/bookings">Book Lab</a>
                     </button>
                 </div>
                 <div>
@@ -73,12 +74,12 @@
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/student_enrolled">Student Enrolled</a> </button> 
+                        <a href="admintables/student_enrolled">Student Enrolled</a> </button>
                 </div>
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/accessed_tool"> Accessed Tools</a> </button> 
+                        <a href="admintables/accessed_tool"> Accessed Tools</a> </button>
                     </button>
                 </div>
                 <div>
@@ -113,50 +114,50 @@
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/professor"> Professors </a> 
+                        <a href="admintables/professor"> Professors </a>
                     </button>
                 </div>
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/project"> Projects </a> 
+                        <a href="admintables/project"> Projects </a>
                     </button>
                 </div>
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/staff"> Staff </a> 
+                        <a href="admintables/staff"> Staff </a>
                     </button>
                 </div>
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/students"> Students </a> 
+                        <a href="admintables/students"> Students </a>
                     </button>
                 </div>
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/time_slot"> Time Slots </a> 
+                        <a href="admintables/time_slot"> Time Slots </a>
                     </button>
                 </div>
                 <div>
                     <button id="courseEnrollmentBtn"
                         class="capitalize bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-8 rounded-full transition-colors duration-300 ease-in-out my-3 mx-4">
-                        <a href="admintables/lab"> Labs </a> 
+                        <a href="admintables/lab"> Labs </a>
                     </button>
                 </div>
             </div>
 
         </div>
 
-    
+
         <!-- needs to be updated -->
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const buttons = document.querySelectorAll('.select-table-btn');
                 const forms = document.querySelectorAll('.table-form');
-        
+
                 buttons.forEach((button) => {
                     button.addEventListener('click', function () {
                         const targetForm = document.getElementById(this.dataset.target);
