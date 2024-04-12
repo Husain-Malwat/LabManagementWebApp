@@ -5,6 +5,7 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from flask import redirect
 import os
+from flask_mail import Mail, Message
 
 # app = Flask(__name__,  template_folder='C:/Users/anish/Desktop/Frontend_Lab/DBMS_frontend/src')
 
@@ -19,8 +20,18 @@ app.secret_key = "abcd2123445"
 app.config["MYSQL_HOST"] = "127.0.0.1"
 app.config["MYSQL_PORT"] = 3306
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = ""
+app.config["MYSQL_PASSWORD"] = "@B203kairavi"
 app.config["MYSQL_DB"] = "lab_bookings"
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT']= 465
+app.config['MAIL_USERNAME']= 'nitishkarnik@iitgn.ac.in'
+app.config['MAIL_PASSWORD']= 'nusi zpza npzq lqsz'
+app.config['MAIL_USE_TLS']= False
+app.config['MAIL_USE_SSL']= True
+mail= Mail(app)
+
+
+
 
 mysql = MySQL(app)
 
@@ -70,6 +81,10 @@ def submit():
                 )
                 mysql.connection.commit()
                 cur.close()
+                
+                msg = Message(subject='Booking Confirmed!', sender='nitishkarnik@iitgn.ac.in', recipients=[email])
+                msg.body = f"Hello, Your Booking has been confirmed . Here are the details: \n\nDate: {date} \nLab: {lab_name} \nTime Slot: {time_slot}  \nThank you!"
+                mail.send(msg)
 
         elif "Equipment_Name" in details:
             # Equipment issuing form data
@@ -175,6 +190,7 @@ def submit():
                 equipmentID = details["ID"]
                 # number_of_equipment = details['numberOfEquipment']
                 issue_date = details["issueDate"]
+                return_date = details["returnDate"]
                 # return_date = details['returnDate']
 
                 cur = mysql.connection.cursor()
@@ -193,8 +209,8 @@ def submit():
                 elif existing_id[1] == 0:
                     return redirect(url_for("booking_lab"))
                 cur.execute(
-                    "INSERT INTO accessed_tool (Roll_Number, ID, Issued_date) VALUES (%s, %s, %s)",
-                    (roll_no, equipmentID, issue_date),
+                    "INSERT INTO accessed_tool (Roll_Number, ID, Issued_date,Return_Date) VALUES (%s, %s, %s,%s)",
+                    (roll_no, equipmentID, issue_date, return_date),
                 )
                 mysql.connection.commit()
                 cur.execute(
@@ -202,6 +218,11 @@ def submit():
                 )
                 mysql.connection.commit()
                 cur.close()
+                
+                msg = Message(subject='Equipment Issuing Confirmed!', sender='nitishkarnik@iitgn.ac.in', recipients=[email])
+                msg.body = f"Hello, Your equipment has been booked. Here are the details: \n\n Roll Number:{roll_no} \nID: {equipmentID} \nIssue Date : {issue_date} \nReturn Date: {return_date}   \nThank you!"
+                mail.send(msg)
+                
             else:
                 equipmentID = details["equipment_id"]
                 cur = mysql.connection.cursor()
@@ -799,7 +820,7 @@ def submitadmin():
         # print(details)
 
         if details["button"] == "insert":
-            try:
+            # try:
                 table_name = details["table"]
                 columns = get_column_names(table_name)
                 values = []
@@ -813,8 +834,8 @@ def submitadmin():
                 mysql.connection.commit()
                 cur.close()
             # Handling errors
-            except Exception as e:
-                return render_template("errorquery.html", error=e)
+            # except Exception as e:
+            #     return render_template("errorquery.html", error=e)
 
         elif details["button"] == "select":
             try:

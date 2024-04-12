@@ -161,6 +161,7 @@
             input.setAttribute('type', 'tel'); // Allowing only phone number format
             input.setAttribute('pattern', '[0-9]{10}'); // Assuming 10 digit phone number
         }
+        
         form.appendChild(input);
     }
     form.appendChild(document.createElement('br'));
@@ -358,7 +359,7 @@ else{
                 }
 
                 document.addEventListener('DOMContentLoaded', function () {
-                    const columns = ['ID', 'Equipment_Name', 'Price', 'Vendor_Address', 'Vendor_Phone_Number', 'Manufacturer_Name', 'Status', 'Lab_Name', 'Quantity'];
+                    const columns = ['ID', 'Equipment_Name', 'Price', 'Vendor_Address', 'Vendor_Phone_Number', 'Manufacturer_Name', 'isAvailable', 'Lab_Name', 'Quantity'];
                     const form = create_form(columns, 'insert');
                     form.id = 'dynamicForm';
                     document.body.appendChild(form);

@@ -122,6 +122,7 @@ UNLOCK TABLES;
 -- Table structure for table `time_slot`
 --
 
+
 DROP TABLE IF EXISTS `time_slot`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 SET character_set_client = utf8mb4 ;
@@ -535,6 +536,7 @@ CREATE TABLE `accessed_tool` (
   `ID` bigint NOT NULL,
   `Roll_Number` int NOT NULL,
   `Issued_Date` DATE,
+  `Return_Date` DATE,
   -- `Return_Time` varchar(255) DEFAULT NULL,
   -- `Quantity_Issued` int NOT NULL,
   PRIMARY KEY (`ID`,`Roll_Number`),
@@ -543,12 +545,6 @@ CREATE TABLE `accessed_tool` (
   CONSTRAINT `accessed_tool_fk_2` FOREIGN KEY (`ID`) REFERENCES `inventory` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 -- /*!40101 SET character_set_client = @saved_cs_client */;
-
-
-
-
-
-
 
 
 

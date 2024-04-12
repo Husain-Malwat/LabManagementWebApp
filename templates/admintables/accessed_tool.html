@@ -54,9 +54,8 @@
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> ID</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> Roll Number</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> Issued Time</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> Return Time</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> Quantity Issued</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> Issued Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> Return Date</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -66,7 +65,6 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ booking[1] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ booking[2] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ booking[3] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ booking[4] }}</td>
                         </tr>
                         {% endfor %}
 
@@ -143,13 +141,10 @@
                             input.setAttribute('placeholder', columns[i].replace('_', ' ')); // Replaces underscores with spaces for better display
                             input.setAttribute('class', 'p-2 m-2');
                             // Set input types based on column names
-                            if (columns[i] === 'Issued_Time' || columns[i] === 'Return_Time') {
-                                input.setAttribute('type', 'datetime-local');
+                            if(columns[i] == 'Issued_Date' || columns[i] == 'Return_Date') {
+                                input.setAttribute('type', 'date');
                             }
-                            if (columns[i] === 'Quantity_Issued') {
-                                input.setAttribute('type', 'number');
-                            }
-
+                            
                             form.appendChild(input);
                         }
 
@@ -351,7 +346,7 @@ else{
     }
                 
             document.addEventListener('DOMContentLoaded', function () {
-                const columns = ['ID', 'Roll_Number', 'Issued_Time', 'Return_Time', 'Quantity_Issued']
+                const columns = ['ID', 'Roll_Number', 'Issued_Date', 'Return_Date']
                 const form = create_form(columns, 'insert');
                 form.id = 'dynamicForm';
                 document.body.appendChild(form);
