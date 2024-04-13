@@ -36,8 +36,12 @@
         <!-- Student Profile -->
         <div class="flex items-center mb-4">
             <div class="w-20 h-20 rounded-full overflow-hidden mr-4">
+                {% if profile_pic %}
+                <img src="{{ profile_pic }}" alt="Student Image" class="w-full h-full object-cover">
+                {% else %}
                 <img src="https://miro.medium.com/v2/resize:fit:1400/1*o68yfo8-S-pnG9KLLG3OAA.png" alt="Student Image"
                     class="w-full h-full object-cover">
+                {% endif %}
             </div>
             <div>
                 <h2 class="text-xl font-bold"> {{name}}</h2>
@@ -48,8 +52,12 @@
         <!-- Professor Profile -->
         <div class="flex items-center mb-4">
             <div class="w-20 h-20 rounded-full overflow-hidden mr-4">
+                {% if profile_pic %}
+                <img src="{{ profile_pic }}" alt="Professor Image" class="w-full h-full object-cover">
+                {% else %}
                 <img src="https://i.pinimg.com/236x/cf/0b/74/cf0b7475f26c043b55fe50cfb98c15d5.jpg" alt="Professor Image"
                     class="w-full h-full object-cover">
+                {% endif %}
             </div>
             <div>
                 <h2 class="text-xl font-bold">{{name}}</h2>
@@ -60,8 +68,12 @@
         <!-- Staff Profile -->
         <div class="flex items-center mb-4">
             <div class="w-20 h-20 rounded-full overflow-hidden mr-4">
+                {% if profile_pic %}
+                <img src="{{ profile_pic }}" alt="Staff Image" class="w-full h-full object-cover">
+                {% else %}
                 <img src="https://64.media.tumblr.com/0ca25b37917bc347d7b1554605cfa392/8030b39c24c09f41-ca/s400x600/6142290337081481b8b44ab03bbe8ef1d9dddfa1.png"
                     alt="Staff Image" class="w-full h-full object-cover">
+                {% endif %}
             </div>
             <div>
                 <h2 class="text-xl font-bold">{{name}}</h2>

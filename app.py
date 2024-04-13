@@ -6,6 +6,9 @@ import MySQLdb.cursors
 from flask import redirect
 import os
 from flask_mail import Mail, Message
+from authlib.integrations.flask_client import OAuth
+
+from dotenv import load_dotenv
 
 # app = Flask(__name__,  template_folder='C:/Users/anish/Desktop/Frontend_Lab/DBMS_frontend/src')
 
@@ -14,13 +17,14 @@ from flask_mail import Mail, Message
 
 # app = Flask(__name__, template_folder=dir_path)
 app = Flask(__name__)
+oauth = OAuth(app)
 
 # Configure MySQL
 app.secret_key = "abcd2123445"
 app.config["MYSQL_HOST"] = "127.0.0.1"
 app.config["MYSQL_PORT"] = 3306
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "@B203kairavi"
+app.config["MYSQL_PASSWORD"] = ""
 app.config["MYSQL_DB"] = "lab_bookings"
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT']= 465
@@ -283,6 +287,7 @@ def profile():
                 name=name,
                 role=role,
                 equipment_details_list=equipment_details_list,
+                profile_pic=(session.get("profile_pic") if session.get("profile_pic") else None),
             )
         elif role == "professor":
             courses = fetch_prof_course(email)
@@ -293,9 +298,10 @@ def profile():
                 name=name,
                 equipment_issued=[],
                 role=role,
+                profile_pic=(session.get("profile_pic") if session.get("profile_pic") else None),
             )
         else:
-            return render_template("profile.html", name=name, role=role)
+            return render_template("profile.html", name=name, role=role, profile_pic=(session.get("profile_pic") if session.get("profile_pic") else None),)
     else:
         grants, inventory = fetch_grant_inventory(email)
         return render_template(
@@ -441,6 +447,74 @@ def register():
 
     if request.method == "GET":
         return render_template("register.html")
+
+@app.route("/register/oauth", methods=["POST"])
+def register_oauth():
+    email = session.get("email")
+    role = request.form["role"]
+    first_name = session.get("first_name")
+    last_name = session.get("last_name")
+    middle_name = ""
+    roll_no = request.form["roll number"]
+    lab_name = request.form["Lab name"]
+    password = ""
+
+    # print(role)
+    # Insert new user into database
+    cur = mysql.connection.cursor()
+    if role == "student":
+        cur.execute("SELECT * FROM students WHERE Email_ID = %s", (email,))
+        if cur.fetchone():
+            return redirect(url_for("register"))
+        try:
+            cur.execute(
+            "INSERT INTO students (Roll_Number, First_Name, Middle_Name, Last_Name, Email_ID, password) VALUES (%s, %s, %s,%s,%s,%s)",
+            (roll_no, first_name, middle_name, last_name, email, password),
+            )
+        except Exception as e:
+            return redirect(url_for("register"))
+    #  cur.execute("INSERT INTO students (Email_ID, First_Name,password) VALUES (%s, %s, %s,%s)", (email, name,password,role))
+    elif role == "professor":
+        cur.execute("SELECT * FROM professor WHERE Email_ID = %s", (email,))
+        if cur.fetchone():
+            return redirect(url_for("register"))
+        try:
+            cur.execute(
+            "INSERT INTO professor (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name,  password) VALUES (%s,%s, %s, %s,%s,%s)",
+            (roll_no, email, first_name, middle_name, last_name, password),
+            )
+        except:
+            return redirect(url_for("register"))
+        # cur.execute("INSERT INTO professors (Email_ID, First_Name,password) VALUES (%s, %s, %s,%s)", (email, name,password,role))
+    elif role == "staff":
+        cur.execute("SELECT * FROM lab WHERE Lab_Name = %s", (lab_name,))
+        lab = cur.fetchone()
+        if lab is None:
+            return redirect("127.0.0.1:5000/404")
+        cur.execute("SELECT * FROM staff WHERE Email_ID = %s", (email,))
+        if cur.fetchone():
+            return redirect(url_for("register"))
+        try:
+            cur.execute(
+            "INSERT INTO staff (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name, password,Lab_Name) VALUES (%s,%s, %s, %s,%s,%s,%s)",
+            (
+                roll_no,
+                email,
+                first_name,
+                middle_name,
+                last_name,
+                password,
+                lab_name,
+            ),
+            )
+        except:
+            return redirect(url_for("register"))
+        # cur.execute("INSERT INTO staff (email, name,password) VALUES (%s, %s, %s,%s)", (email, name,password,role))
+    mysql.connection.commit()
+    cur.close()
+
+    # Redirect to login page after successful registration
+    return redirect("/login")
 
 
 @app.route("/bookinglab")
@@ -1036,6 +1110,61 @@ def get_inventory():
 @app.route("/inventory")
 def inventory_site():
     return render_template("inventory.html")
+
+@app.route("/google")
+def google():
+    load_dotenv()
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+
+    CONF_URL = "https://accounts.google.com/.well-known/openid-configuration"
+
+    oauth.register(
+        name="google",
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        server_metadata_url=CONF_URL,
+        client_kwargs={
+            'scope': 'openid email profile'
+        }
+    )
+     
+    # Redirect to google_auth function
+    redirect_uri = url_for('google_auth', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+ 
+@app.route('/google/auth')
+def google_auth():
+    token = oauth.google.authorize_access_token()
+    print("Token ", token)
+    userinfo = token['userinfo']
+    session['email'] = userinfo['email']
+    session['profile_pic'] = userinfo['picture']
+    if check_user(userinfo['email']) and userinfo['email_verified']:
+        session['loggedin'] = True
+        return redirect('/bookinglab')
+    elif userinfo['email_verified']:
+        firstName = userinfo['given_name']
+        lastName = userinfo['family_name']
+        session['first_name'] = firstName
+        session['last_name'] = lastName
+        return render_template("register_oauth.html", first_name=firstName, last_name=lastName, email=userinfo['email'])
+    return redirect('/')
+
+def check_user(email):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM students WHERE Email_ID = %s", (email,))
+    user = cur.fetchone()
+    if user == None:
+        cur.execute("SELECT * FROM professor WHERE Email_ID = %s", (email,))
+        user = cur.fetchone()
+        if user == None:
+            cur.execute("SELECT * FROM staff WHERE Email_ID = %s", (email,))
+            user = cur.fetchone()
+    cur.close()
+    if user == None:
+        return False
+    return True
 
 def fetch_all():
     cur = mysql.connection.cursor()

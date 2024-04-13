@@ -81,7 +81,7 @@
     </form>
 
 
-    <div class="mb-8" class="hidden" id="tableDiv">
+    <div class="mb-8" style="display: none;" id="tableDiv">
       <h2 class="text-xl font-bold mb-2">Items List</h2>
       <div class="overflow-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -141,7 +141,7 @@
         get_data(url = "/api/get_inventory", data = data_dict)
           .then(data => {
             console.log(data);
-            document.getElementById('tableDiv').classList.remove('hidden');
+            document.getElementById('tableDiv').style.display = 'block';
             const inventory = data.inventory;
             var inventoryList = document.getElementById('inventoryList');
             inventoryList.innerHTML = '';
