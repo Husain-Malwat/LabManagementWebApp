@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS bookings (
     name VARCHAR(255) NOT NULL,
     lab_name VARCHAR(255) NOT NULL,
     time_slot VARCHAR(255) NOT NULL,
-    date DATE NOT NULL
+    date DATE NOT NULL,
+    CONSTRAINT chk_name_letters_only CHECK (name REGEXP '^[A-Za-z]+$')
 );
 
 
@@ -113,7 +114,29 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-INSERT INTO `course` VALUES ('AQ264',1,'Paramedic'),('AY572',3,'Radio'),('CT740',2,'Researcher'),('EB565',2,'Environmental'),('FG378',2,'Seismologist'),('FN914',3,'Dealer'),('GB578',2,'Quality_Manager'),('GE392',1,'Media'),('ID617',3,'Engineer'),('KM959',4,'Accounts'),('MQ319',1,'Solicitor'),('OR177',1,'Worker'),('PJ264',2,'Advertising'),('UJ495',3,'Mechanical'),('UY580',5,'Lexicographer'),('VH458',3,'Programmer'),('WV691',5,'Engineer'),('WV937',1,'Manager'),('YW710',2,'horticultural'),('ZJ857',1,'electronics');
+INSERT INTO `course` (`Course_ID`, `Credits`, `Course_Name`)
+VALUES
+('AQ264', 1, 'Paramedic'),
+('AY572', 3, 'Radio'),
+('CT740', 2, 'Researcher'),
+('EB565', 2, 'Environmental'),
+('FG378', 2, 'Seismologist'),
+('FN914', 3, 'Dealer'),
+('GB578', 2, 'Quality Manager'),
+('GE392', 1, 'Media'),
+('ID617', 3, 'Engineer'),
+('KM959', 4, 'Accounts'),
+('MQ319', 1, 'Solicitor'),
+('OR177', 1, 'Worker'),
+('PJ264', 2, 'Advertising'),
+('UJ495', 3, 'Mechanical'),
+('UY580', 5, 'Lexicographer'),
+('VH458', 3, 'Programmer'),
+('WV691', 5, 'Engineer'),
+('WV937', 1, 'Manager'),
+('YW710', 2, 'Horticultural'),
+('ZJ857', 1, 'Electronics');
+
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -158,7 +181,8 @@ CREATE TABLE `lab` (
   `Contact` bigint DEFAULT NULL,
   PRIMARY KEY (`Lab_Name`),
   UNIQUE KEY `Lab_Name` (`Lab_Name`),
-  CONSTRAINT `lab_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000)))
+  CONSTRAINT `lab_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000))),
+  CONSTRAINT amt_alloc CHECK (`Amount_Allocated` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -241,7 +265,8 @@ CREATE TABLE `grants` (
   UNIQUE KEY `ID` (`ID`),
   KEY `idx_donating_organization` (`Donating_Organization`),
   KEY `idx_amount` (`Amount`),
-  KEY `idx_receiving_date` (`Receiving_Date`)
+  KEY `idx_receiving_date` (`Receiving_Date`),
+  CONSTRAINT Grant_amt CHECK (`Amount` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -274,7 +299,12 @@ CREATE TABLE `professor` (
   `password` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`Employee_ID`),
   UNIQUE KEY `Employee_ID` (`Employee_ID`),
-  CONSTRAINT `professor_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000)))
+  CONSTRAINT Grnt_aid CHECK (`Grant_Aid` >= 0),
+  CONSTRAINT `professor_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000))),
+  CONSTRAINT chk_name_letters_only1 CHECK (First_Name REGEXP '^[A-Za-z]+$'),
+  CONSTRAINT chk_Middle_Name_letters_only CHECK (Middle_Name REGEXP '^[A-Za-z]+$'),
+  CONSTRAINT chk_Last_Name_letters_only CHECK (Last_Name REGEXP '^[A-Za-z]+$')
+  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -321,7 +351,8 @@ CREATE TABLE `inventory` (
   `Lab_Name` ENUM('Anatomy Lab', 'Biochemistry Lab', 'Biology Lab', 'Botany Lab', 'Chemistry Lab', 'Computer Lab', 'Ecology Lab', 'Engineering Lab', 'Genetics Lab', 'Geology Lab', 'Microbiology Lab', 'Neuroscience Lab', 'Physics Lab', 'Psychology Lab', 'Zoology Lab') NOT NULL, 
   `Quantity` int DEFAULT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `ID` (`ID`)
+  UNIQUE KEY `ID` (`ID`),
+  CONSTRAINT inv_quant CHECK (`Quantity` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -360,6 +391,7 @@ CREATE TABLE `lab_grant` (
   `Receiving_Date` date DEFAULT NULL,
   PRIMARY KEY (`Lab_Name`,`ID`),
   KEY `lab_grant_fk_1` (`ID`),
+  CONSTRAINT lab_Gnt_Aid CHECK (`Amount` >= 0),
   CONSTRAINT `lab_grant_fk_1` FOREIGN KEY (`ID`) REFERENCES `grants` (`ID`),
   CONSTRAINT `lab_grant_fk_2` FOREIGN KEY (`Lab_Name`) REFERENCES `lab` (`Lab_Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -424,7 +456,9 @@ CREATE TABLE `project` (
   `Name` varchar(255) NOT NULL,
   `Grant_Aid` float DEFAULT '0',
   PRIMARY KEY (`Project_ID`),
-  UNIQUE KEY `Project_ID` (`Project_ID`)
+  UNIQUE KEY `Project_ID` (`Project_ID`),
+  CONSTRAINT Proj_Aid CHECK (`Grant_Aid` >= 0),
+  CONSTRAINT check_name_letters_only CHECK (Name REGEXP '^[a-zA-Z ]+$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -451,8 +485,13 @@ CREATE TABLE `staff` (
   `password` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`Employee_ID`),
   UNIQUE KEY `Employee_ID` (`Employee_ID`),
+  CONSTRAINT Staf_Sal CHECK (`Salary` >= 0),
   CONSTRAINT `staff_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000))),
-  CONSTRAINT `staff_fk_2` FOREIGN KEY (`Lab_Name`) REFERENCES `lab` (`Lab_Name`)
+  CONSTRAINT `staff_fk_2` FOREIGN KEY (`Lab_Name`) REFERENCES `lab` (`Lab_Name`),
+  CONSTRAINT staff_First_Name CHECK (First_Name REGEXP '^[a-zA-Z ]+$'),
+  CONSTRAINT staff_Middle_Name CHECK (Middle_Name REGEXP '^[a-zA-Z ]+$'),
+  CONSTRAINT staff_Last_Name CHECK (Last_Name REGEXP '^[a-zA-Z ]+$')
+  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -480,8 +519,13 @@ CREATE TABLE `students` (
   `password` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`Roll_Number`),
   UNIQUE KEY `Roll_Number` (`Roll_Number`),
+  CONSTRAINT Stud_Amount_due_2 CHECK (`Amount_Due` >= 0),
+  CONSTRAINT Con_Batch CHECK (`Batch` >= 0),
   CONSTRAINT `students_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000))),
-  CONSTRAINT `students_fk_2`FOREIGN KEY (`Dept_Name`) REFERENCES `department` (`Dept_Name`)
+  CONSTRAINT `students_fk_2`FOREIGN KEY (`Dept_Name`) REFERENCES `department` (`Dept_Name`),
+  CONSTRAINT stud_First_name CHECK (First_Name REGEXP '^[a-zA-Z ]+$'),
+  CONSTRAINT stud_Middle_name CHECK (Middle_Name REGEXP '^[a-zA-Z ]+$'),
+  CONSTRAINT stud_last_name CHECK (Last_Name REGEXP '^[a-zA-Z ]+$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

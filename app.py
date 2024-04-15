@@ -9,7 +9,8 @@ from flask_mail import Mail, Message
 from authlib.integrations.flask_client import OAuth
 
 from dotenv import load_dotenv
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 # app = Flask(__name__,  template_folder='C:/Users/anish/Desktop/Frontend_Lab/DBMS_frontend/src')
 
 # Get the absolute path of the directory where this file is located
@@ -24,7 +25,7 @@ app.secret_key = "abcd2123445"
 app.config["MYSQL_HOST"] = "127.0.0.1"
 app.config["MYSQL_PORT"] = 3306
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = ""
+app.config["MYSQL_PASSWORD"] = "Kaushal@123"
 app.config["MYSQL_DB"] = "lab_bookings"
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT']= 465
@@ -1330,3 +1331,10 @@ def invalid_route(e):
 
 if __name__ == "__main__":
     app.run(debug=True)
+    limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://",
+    )
+
