@@ -38,9 +38,9 @@ Srujan Shetty
 - Implemented necessary features after feedback
   
 Sachin Jalan
-- Did Concurrency 
-- Performed Attacks
-- Enhanced the SQL database by adding additional constraints.
+- Looked how to enable concurrent users to the same website
+- Preventing race conditions by looking into locking mechanism of mysql
+- Testing the concurrent request to the database
   
 Kaushal Kothiya
 - Performed attacks and found vulnerabilities in the code
