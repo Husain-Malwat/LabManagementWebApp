@@ -1,2 +1,6 @@
-Flask-MySQLdb
 Flask
+Flask-MySQLdb
+Flask-Mail
+authlib
+python-dotenv
+Flask-Limiter
