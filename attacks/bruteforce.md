@@ -26,10 +26,16 @@ By running the script, we got the password in about 3 minutes.
    - To Perform BruteForce attacks, Adversary has to try all the possible permutations, for which he/she needs to send thousands of requests to the server.
 
 - We applied rate limiters to our website as a defence against this attack.
-![image](https://github.com/kaushal-003/LabManagementWebApp/assets/114857798/f051cc3d-8a7b-4a91-a30e-63ef652055ce)
+![image](https://github.com/kaushal-003/LabManagementWebApp/assets/114857798/4f5c623e-ac72-4a03-8544-f89789a406e7)
 
-After applying rate limiters:-
-![image](https://github.com/kaushal-003/LabManagementWebApp/assets/114857798/e57b8561-af10-44cd-b9d1-6a86b084bf0a)
+
+After applying rate limiters:-  
+
+![image](https://github.com/kaushal-003/LabManagementWebApp/assets/114857798/76525408-615f-41cb-aac3-24dd92e8ab95)
+
+
+![image](https://github.com/kaushal-003/LabManagementWebApp/assets/114857798/99a76cca-eab1-4a35-9383-0ad46baaa2fe)
+
 
 
 
