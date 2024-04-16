@@ -177,7 +177,7 @@ CREATE TABLE `lab` (
   `Amount_Allocated` float DEFAULT '0',
   `Working_Hours` int DEFAULT NULL,
   `Capacity` int DEFAULT NULL,
-  `Email_ID` VARCHAR(255) CHECK (Email_ID REGEXP'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  `Email_ID` VARCHAR(255) ,
   `Contact` bigint DEFAULT NULL,
   PRIMARY KEY (`Lab_Name`),
   UNIQUE KEY `Lab_Name` (`Lab_Name`),
@@ -294,7 +294,7 @@ CREATE TABLE `professor` (
   `Last_Name` varchar(255) DEFAULT NULL,
   `Grant_Aid` float DEFAULT '0',
   `Office_Number` varchar(255) DEFAULT NULL,
-  `Email_ID` VARCHAR(255) CHECK (Email_ID REGEXP'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  `Email_ID` VARCHAR(255) ,
   `Contact` bigint DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`Employee_ID`),
@@ -302,8 +302,8 @@ CREATE TABLE `professor` (
   CONSTRAINT Grnt_aid CHECK (`Grant_Aid` >= 0),
   CONSTRAINT `professor_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000))),
   CONSTRAINT chk_name_letters_only1 CHECK (First_Name REGEXP '^[A-Za-z]+$'),
-  CONSTRAINT chk_Middle_Name_letters_only CHECK (Middle_Name REGEXP '^[A-Za-z]+$'),
-  CONSTRAINT chk_Last_Name_letters_only CHECK (Last_Name REGEXP '^[A-Za-z]+$')
+  CONSTRAINT chk_Middle_Name_letters_only CHECK (Middle_Name REGEXP '^[A-Za-z]*$'),
+  CONSTRAINT chk_Last_Name_letters_only CHECK (Last_Name REGEXP '^[A-Za-z]*$')
   
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -478,7 +478,7 @@ CREATE TABLE `staff` (
   `Salary` float DEFAULT NULL,
   `Role` enum('Assistant','Researcher','Technician') DEFAULT NULL,
   `Lab_Name` ENUM('Anatomy Lab', 'Biochemistry Lab', 'Biology Lab', 'Botany Lab', 'Chemistry Lab', 'Computer Lab', 'Ecology Lab', 'Engineering Lab', 'Genetics Lab', 'Geology Lab', 'Microbiology Lab', 'Neuroscience Lab', 'Physics Lab', 'Psychology Lab', 'Zoology Lab') NOT NULL, 
-  `Email_ID` VARCHAR(255) CHECK (Email_ID REGEXP'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  `Email_ID` VARCHAR(255) ,
   `Contact` bigint DEFAULT NULL,
   `img_url` VARCHAR(255) DEFAULT NULL,
   `img_caption` VARCHAR(255) DEFAULT NULL,
@@ -489,8 +489,8 @@ CREATE TABLE `staff` (
   CONSTRAINT `staff_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000))),
   CONSTRAINT `staff_fk_2` FOREIGN KEY (`Lab_Name`) REFERENCES `lab` (`Lab_Name`),
   CONSTRAINT staff_First_Name CHECK (First_Name REGEXP '^[a-zA-Z ]+$'),
-  CONSTRAINT staff_Middle_Name CHECK (Middle_Name REGEXP '^[a-zA-Z ]+$'),
-  CONSTRAINT staff_Last_Name CHECK (Last_Name REGEXP '^[a-zA-Z ]+$')
+  CONSTRAINT staff_Middle_Name CHECK (Middle_Name REGEXP '^[a-zA-Z ]*$'),
+  CONSTRAINT staff_Last_Name CHECK (Last_Name REGEXP '^[a-zA-Z ]*$')
   
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -514,7 +514,7 @@ CREATE TABLE `students` (
   `Amount_Due` float DEFAULT '0',
   `Purpose` varchar(255) DEFAULT NULL, 
   `Dept_Name` ENUM('CE', 'CL', 'CSE', 'EE', 'ME', 'MSE') NOT NULL,
-  `Email_ID` VARCHAR(255) CHECK (Email_ID REGEXP'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  `Email_ID` VARCHAR(255) ,
   `Contact` bigint DEFAULT NULL,
   `password` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`Roll_Number`),
@@ -524,8 +524,8 @@ CREATE TABLE `students` (
   CONSTRAINT `students_chk_2` CHECK (((`Contact` >= 1000000000) and (`Contact` < 10000000000))),
   CONSTRAINT `students_fk_2`FOREIGN KEY (`Dept_Name`) REFERENCES `department` (`Dept_Name`),
   CONSTRAINT stud_First_name CHECK (First_Name REGEXP '^[a-zA-Z ]+$'),
-  CONSTRAINT stud_Middle_name CHECK (Middle_Name REGEXP '^[a-zA-Z ]+$'),
-  CONSTRAINT stud_last_name CHECK (Last_Name REGEXP '^[a-zA-Z ]+$')
+  CONSTRAINT stud_Middle_name CHECK (Middle_Name REGEXP '^[a-zA-Z ]*$'),
+  CONSTRAINT stud_last_name CHECK (Last_Name REGEXP '^[a-zA-Z ]*$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
