@@ -17,6 +17,10 @@ while length<=8:
                 print(u"Found password: "+i)
                 flag = 1
                 break
+            if req.status_code==429:
+                print("Rate limited")
+                flag=1
+                break
         if not flag:
             break
         if flag:
