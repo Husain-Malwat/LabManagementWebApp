@@ -33,6 +33,7 @@ After applying rate limiters:-
 
 ![image](https://github.com/kaushal-003/LabManagementWebApp/assets/114857798/76525408-615f-41cb-aac3-24dd92e8ab95)
 
+- On running ```BruteForce.py```:
 
 ![image](https://github.com/kaushal-003/LabManagementWebApp/assets/114857798/99a76cca-eab1-4a35-9383-0ad46baaa2fe)
 
