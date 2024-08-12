@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify
 
-# from Flask-MySQLdb import MySQL
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from flask import redirect
@@ -12,12 +11,8 @@ from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-# app = Flask(__name__,  template_folder='C:/Users/anish/Desktop/Frontend_Lab/DBMS_frontend/src')
+load_dotenv()
 
-# Get the absolute path of the directory where this file is located
-# dir_path = os.path.dirname(os.path.realpath(__file__))
-
-# app = Flask(__name__, template_folder=dir_path)
 app = Flask(__name__)
 oauth = OAuth(app)
 limiter = Limiter(
@@ -25,23 +20,21 @@ limiter = Limiter(
     app=app,
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://",
-    )
+)
 # Configure MySQL
 app.secret_key = "abcd2123445"
-app.config["MYSQL_HOST"] = "127.0.0.1"
-app.config["MYSQL_PORT"] = 3306
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = ""
+app.config["MYSQL_HOST"] =  os.getenv("MYSQL_HOST")
+app.config["MYSQL_PORT"] = os.getenv("MYSQL_PORT")
+app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
 app.config["MYSQL_DB"] = "lab_bookings"
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT']= 465
-app.config['MAIL_USERNAME']= 'nitishkarnik@iitgn.ac.in'
-app.config['MAIL_PASSWORD']= 'nusi zpza npzq lqsz'
-app.config['MAIL_USE_TLS']= False
-app.config['MAIL_USE_SSL']= True
-mail= Mail(app)
-
-
+app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+app.config["MAIL_PORT"] = os.getenv("MAIL_PORT")
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+app.config["MAIL_USE_TLS"] = False
+app.config["MAIL_USE_SSL"] = True
+mail = Mail(app)
 
 
 mysql = MySQL(app)
@@ -63,10 +56,10 @@ def submit():
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM students WHERE Email_ID = %s", (email,))
         user = cur.fetchone()
-        if user == None:
+        if user is None:
             cur.execute("SELECT * FROM professor WHERE Email_ID = %s", (email,))
             user = cur.fetchone()
-            if user == None:
+            if user is None:
                 cur.execute("SELECT * FROM staff WHERE Email_ID = %s", (email,))
                 user = cur.fetchone()
         if user:
@@ -92,8 +85,12 @@ def submit():
                 )
                 mysql.connection.commit()
                 cur.close()
-                
-                msg = Message(subject='Booking Confirmed!', sender='nitishkarnik@iitgn.ac.in', recipients=[email])
+
+                msg = Message(
+                    subject="Booking Confirmed!",
+                    sender="nitishkarnik@iitgn.ac.in",
+                    recipients=[email],
+                )
                 msg.body = f"Hello, Your Booking has been confirmed . Here are the details: \n\nDate: {date} \nLab: {lab_name} \nTime Slot: {time_slot}  \nThank you!"
                 mail.send(msg)
 
@@ -207,7 +204,7 @@ def submit():
                 cur = mysql.connection.cursor()
                 cur.execute("select * from students where Email_ID = %s", (email,))
                 user = cur.fetchone()
-                if user != None:
+                if user is not None:
                     roll_no = user[0]
                 else:
                     redirect(url_for("404"))
@@ -229,17 +226,21 @@ def submit():
                 )
                 mysql.connection.commit()
                 cur.close()
-                
-                msg = Message(subject='Equipment Issuing Confirmed!', sender='nitishkarnik@iitgn.ac.in', recipients=[email])
+
+                msg = Message(
+                    subject="Equipment Issuing Confirmed!",
+                    sender="nitishkarnik@iitgn.ac.in",
+                    recipients=[email],
+                )
                 msg.body = f"Hello, Your equipment has been booked. Here are the details: \n\n Roll Number:{roll_no} \nID: {equipmentID} \nIssue Date : {issue_date} \nReturn Date: {return_date}   \nThank you!"
                 mail.send(msg)
-                
+
             else:
                 equipmentID = details["equipment_id"]
                 cur = mysql.connection.cursor()
                 cur.execute("select * from students where Email_ID = %s", (email,))
                 user = cur.fetchone()
-                if user != None:
+                if user is not None:
                     roll_no = user[0]
                 else:
                     redirect(url_for("404"))
@@ -294,7 +295,9 @@ def profile():
                 name=name,
                 role=role,
                 equipment_details_list=equipment_details_list,
-                profile_pic=(session.get("profile_pic") if session.get("profile_pic") else None),
+                profile_pic=(
+                    session.get("profile_pic") if session.get("profile_pic") else None
+                ),
             )
         elif role == "professor":
             courses = fetch_prof_course(email)
@@ -305,10 +308,19 @@ def profile():
                 name=name,
                 equipment_issued=[],
                 role=role,
-                profile_pic=(session.get("profile_pic") if session.get("profile_pic") else None),
+                profile_pic=(
+                    session.get("profile_pic") if session.get("profile_pic") else None
+                ),
             )
         else:
-            return render_template("profile.html", name=name, role=role, profile_pic=(session.get("profile_pic") if session.get("profile_pic") else None),)
+            return render_template(
+                "profile.html",
+                name=name,
+                role=role,
+                profile_pic=(
+                    session.get("profile_pic") if session.get("profile_pic") else None
+                ),
+            )
     else:
         grants, inventory = fetch_grant_inventory(email)
         return render_template(
@@ -336,13 +348,13 @@ def login():
             (email, password),
         )
         user = cursor.fetchone()
-        if user == None:
+        if user is None:
             cursor.execute(
                 "SELECT * FROM professor WHERE Email_ID = %s AND password = %s",
                 (email, password),
             )
             user = cursor.fetchone()
-            if user == None:
+            if user is None:
                 cursor.execute(
                     "SELECT * FROM staff WHERE Email_ID = %s AND password = %s",
                     (email, password),
@@ -404,10 +416,10 @@ def register():
                 return redirect(url_for("register"))
             try:
                 cur.execute(
-                "INSERT INTO students (Roll_Number, First_Name, Middle_Name, Last_Name, Email_ID, password) VALUES (%s, %s, %s,%s,%s,%s)",
-                (roll_no, first_name, middle_name, last_name, email, password),
+                    "INSERT INTO students (Roll_Number, First_Name, Middle_Name, Last_Name, Email_ID, password) VALUES (%s, %s, %s,%s,%s,%s)",
+                    (roll_no, first_name, middle_name, last_name, email, password),
                 )
-            except Exception as e:
+            except Exception as err:
                 return redirect(url_for("register"))
         #  cur.execute("INSERT INTO students (Email_ID, First_Name,password) VALUES (%s, %s, %s,%s)", (email, name,password,role))
         elif role == "professor":
@@ -416,8 +428,8 @@ def register():
                 return redirect(url_for("register"))
             try:
                 cur.execute(
-                "INSERT INTO professor (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name,  password) VALUES (%s,%s, %s, %s,%s,%s)",
-                (roll_no, email, first_name, middle_name, last_name, password),
+                    "INSERT INTO professor (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name,  password) VALUES (%s,%s, %s, %s,%s,%s)",
+                    (roll_no, email, first_name, middle_name, last_name, password),
                 )
             except:
                 return redirect(url_for("register"))
@@ -432,16 +444,16 @@ def register():
                 return redirect(url_for("register"))
             try:
                 cur.execute(
-                "INSERT INTO staff (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name, password,Lab_Name) VALUES (%s,%s, %s, %s,%s,%s,%s)",
-                (
-                    roll_no,
-                    email,
-                    first_name,
-                    middle_name,
-                    last_name,
-                    password,
-                    lab_name,
-                ),
+                    "INSERT INTO staff (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name, password,Lab_Name) VALUES (%s,%s, %s, %s,%s,%s,%s)",
+                    (
+                        roll_no,
+                        email,
+                        first_name,
+                        middle_name,
+                        last_name,
+                        password,
+                        lab_name,
+                    ),
                 )
             except:
                 return redirect(url_for("register"))
@@ -454,6 +466,7 @@ def register():
 
     if request.method == "GET":
         return render_template("register.html")
+
 
 @app.route("/register/oauth", methods=["POST"])
 def register_oauth():
@@ -475,10 +488,10 @@ def register_oauth():
             return redirect(url_for("register"))
         try:
             cur.execute(
-            "INSERT INTO students (Roll_Number, First_Name, Middle_Name, Last_Name, Email_ID, password) VALUES (%s, %s, %s,%s,%s,%s)",
-            (roll_no, first_name, middle_name, last_name, email, password),
+                "INSERT INTO students (Roll_Number, First_Name, Middle_Name, Last_Name, Email_ID, password) VALUES (%s, %s, %s,%s,%s,%s)",
+                (roll_no, first_name, middle_name, last_name, email, password),
             )
-        except Exception as e:
+        except Exception as err:
             return redirect(url_for("register"))
     #  cur.execute("INSERT INTO students (Email_ID, First_Name,password) VALUES (%s, %s, %s,%s)", (email, name,password,role))
     elif role == "professor":
@@ -487,8 +500,8 @@ def register_oauth():
             return redirect(url_for("register"))
         try:
             cur.execute(
-            "INSERT INTO professor (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name,  password) VALUES (%s,%s, %s, %s,%s,%s)",
-            (roll_no, email, first_name, middle_name, last_name, password),
+                "INSERT INTO professor (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name,  password) VALUES (%s,%s, %s, %s,%s,%s)",
+                (roll_no, email, first_name, middle_name, last_name, password),
             )
         except:
             return redirect(url_for("register"))
@@ -503,16 +516,16 @@ def register_oauth():
             return redirect(url_for("register"))
         try:
             cur.execute(
-            "INSERT INTO staff (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name, password,Lab_Name) VALUES (%s,%s, %s, %s,%s,%s,%s)",
-            (
-                roll_no,
-                email,
-                first_name,
-                middle_name,
-                last_name,
-                password,
-                lab_name,
-            ),
+                "INSERT INTO staff (Employee_ID,Email_ID, First_Name, Middle_Name, Last_Name, password,Lab_Name) VALUES (%s,%s, %s, %s,%s,%s,%s)",
+                (
+                    roll_no,
+                    email,
+                    first_name,
+                    middle_name,
+                    last_name,
+                    password,
+                    lab_name,
+                ),
             )
         except:
             return redirect(url_for("register"))
@@ -902,21 +915,21 @@ def submitadmin():
 
         if details["button"] == "insert":
             # try:
-                table_name = details["table"]
-                columns = get_column_names(table_name)
-                values = []
-                for column in columns:
-                    values.append(details[column])
-                cur = mysql.connection.cursor()
-                cur.execute(
-                    f"INSERT INTO {table_name} ({','.join(columns)}) VALUES ({','.join(['%s']*len(columns))})",
-                    values,
-                )
-                mysql.connection.commit()
-                cur.close()
-            # Handling errors
-            # except Exception as e:
-            #     return render_template("errorquery.html", error=e)
+            table_name = details["table"]
+            columns = get_column_names(table_name)
+            values = []
+            for column in columns:
+                values.append(details[column])
+            cur = mysql.connection.cursor()
+            cur.execute(
+                f"INSERT INTO {table_name} ({','.join(columns)}) VALUES ({','.join(['%s']*len(columns))})",
+                values,
+            )
+            mysql.connection.commit()
+            cur.close()
+        # Handling errors
+        # except Exception as err:
+        #     return render_template("errorquery.html", error=e)
 
         elif details["button"] == "select":
             try:
@@ -943,8 +956,8 @@ def submitadmin():
                     list_length=list_length,
                 )
             # Handling errors
-            except Exception as e:
-                return render_template("errorquery.html", error=e)
+            except Exception as err:
+                return render_template("errorquery.html", error=err)
 
         elif details["button"] == "delete":
             try:
@@ -955,8 +968,8 @@ def submitadmin():
                 mysql.connection.commit()
                 cur.close()
             # Handling errors
-            except Exception as e:
-                return render_template("errorquery.html", error=e)
+            except Exception as err:
+                return render_template("errorquery.html", error=err)
 
         elif details["button"] == "update":
 
@@ -970,8 +983,8 @@ def submitadmin():
                 mysql.connection.commit()
                 cur.close()
             # Handling errors
-            except Exception as e:
-                return render_template("errorquery.html", error=e)
+            except Exception as err:
+                return render_template("errorquery.html", error=err)
 
         elif details["button"] == "rename":
             try:
@@ -984,8 +997,8 @@ def submitadmin():
                 mysql.connection.commit()
                 cur.close()
             # Handling errors
-            except Exception as e:
-                return render_template("errorquery.html", error=e)
+            except Exception as err:
+                return render_template("errorquery.html", error=err)
 
         return render_template("submitadmin.html")
 
@@ -1081,7 +1094,7 @@ def check_equipment():
     cur = mysql.connection.cursor()
     cur.execute("select * from students where Email_ID = %s", (email,))
     user = cur.fetchone()
-    if user != None:
+    if user is not None:
         roll_no = user[0]
     else:
         redirect(url_for("404"))
@@ -1105,6 +1118,7 @@ def check_equipment():
     cur.close()
     return jsonify({"Availability": "True"}), 400
 
+
 @app.route("/api/get_inventory", methods=["POST"])
 def get_inventory():
     if "loggedin" not in session:
@@ -1117,13 +1131,14 @@ def get_inventory():
     cur.close()
     return jsonify({"inventory": inventory}), 200
 
+
 @app.route("/inventory")
 def inventory_site():
     return render_template("inventory.html")
 
+
 @app.route("/google")
 def google():
-    load_dotenv()
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
@@ -1134,47 +1149,53 @@ def google():
         client_id=GOOGLE_CLIENT_ID,
         client_secret=GOOGLE_CLIENT_SECRET,
         server_metadata_url=CONF_URL,
-        client_kwargs={
-            'scope': 'openid email profile'
-        }
+        client_kwargs={"scope": "openid email profile"},
     )
-     
+
     # Redirect to google_auth function
-    redirect_uri = url_for('google_auth', _external=True)
+    redirect_uri = url_for("google_auth", _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
- 
-@app.route('/google/auth')
+
+
+@app.route("/google/auth")
 def google_auth():
     token = oauth.google.authorize_access_token()
     print("Token ", token)
-    userinfo = token['userinfo']
-    session['email'] = userinfo['email']
-    session['profile_pic'] = userinfo['picture']
-    if check_user(userinfo['email']) and userinfo['email_verified']:
-        session['loggedin'] = True
-        return redirect('/bookinglab')
-    elif userinfo['email_verified']:
-        firstName = userinfo['given_name']
-        lastName = userinfo['family_name']
-        session['first_name'] = firstName
-        session['last_name'] = lastName
-        return render_template("register_oauth.html", first_name=firstName, last_name=lastName, email=userinfo['email'])
-    return redirect('/')
+    userinfo = token["userinfo"]
+    session["email"] = userinfo["email"]
+    session["profile_pic"] = userinfo["picture"]
+    if check_user(userinfo["email"]) and userinfo["email_verified"]:
+        session["loggedin"] = True
+        return redirect("/bookinglab")
+    elif userinfo["email_verified"]:
+        first_name = userinfo["given_name"]
+        last_name = userinfo["family_name"]
+        session["first_name"] = first_name
+        session["last_name"] = last_name
+        return render_template(
+            "register_oauth.html",
+            first_name=first_name,
+            last_name=last_name,
+            email=userinfo["email"],
+        )
+    return redirect("/")
+
 
 def check_user(email):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM students WHERE Email_ID = %s", (email,))
     user = cur.fetchone()
-    if user == None:
+    if user is None:
         cur.execute("SELECT * FROM professor WHERE Email_ID = %s", (email,))
         user = cur.fetchone()
-        if user == None:
+        if user is None:
             cur.execute("SELECT * FROM staff WHERE Email_ID = %s", (email,))
             user = cur.fetchone()
     cur.close()
-    if user == None:
+    if user is None:
         return False
     return True
+
 
 def fetch_all():
     cur = mysql.connection.cursor()
@@ -1233,7 +1254,7 @@ def fetch_equipment_issued(email):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * from students where Email_ID = %s", (email,))
     user = cur.fetchone()
-    if user != None:
+    if user is not None:
         roll_no = user[0]
     else:
         return None
@@ -1247,16 +1268,16 @@ def fetch_role(email):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM students WHERE Email_ID = %s", (email,))
     role = cur.fetchone()
-    if role == None:
+    if role is None:
         cur.execute("SELECT * FROM professor WHERE Email_ID = %s", (email,))
         role = cur.fetchone()
-        if role == None:
+        if role is None:
             cur.execute("SELECT * FROM staff WHERE Email_ID = %s", (email,))
             role = cur.fetchone()
-            if role == None:
+            if role is None:
                 cur.execute("SELECT * FROM lab WHERE Email_ID = %s", (email,))
                 role = cur.fetchone()
-                if role != None:
+                if role is not None:
                     role = "lab"
             else:
                 role = "staff"
@@ -1334,11 +1355,9 @@ def auth_admin():
 
 
 @app.errorhandler(404)
-def invalid_route(e):
+def invalid_route(error):
     return render_template("404.html")
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-    
-
