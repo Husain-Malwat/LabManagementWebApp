@@ -21,7 +21,6 @@
     - [3. Professor:](#3-professor)
     - [4. Student:](#4-student)
   - [Webpage:](#webpage)
-  - [Contributions:](#contributions)
 
 ## Introduction:
 
@@ -277,45 +276,3 @@ profile:
 ![webpage_30](images/Screenshots/30.png)
 
 
-## Contributions:
-### Group 1
-
-##### Manan Jain
-- Created the front-end of the lab webpage.
-- Used HTML to create the front-end structure of the lab webpage.
-- Incorporated navbar and footer using Bootstrap.
-- Applied CSS styling to enhance the visual appearance and utilized CSS techniques such as flexbox for responsive design.
-- Contributed in the ReadMe file.
-
-##### Anish Karnik
-- Created templates related to Admin Page
-- Worked on frontend of Profile page.
-- Worked on client-side related renderings using Javascript. 
-
-##### Srujan Kumar Shetty
-- Created API routes for checking availability of lab slots and equipments. 
-- Worked on different HTML templates. 
-- Helped in styling, password constraints. 
-
-##### Husain Malawat
-- Worked on Hero page frontend. 
-- Contributed to ReadMe file. 
-- Helped in route testing, user authentication. 
-
-### Group 2
-
-##### Sachin Jalan
-- Worked on flask integration with MySQL.
-- Helped in testing routing and admin operations. 
-- Worked on routing of lab bookings, issue equipment. 
-- 
-
-##### Kaushal Kothiya
-- Worked in backend implementation of the login and authentication system recognizing different user roles.
-- Worked on designing backend routes.
-- Helped in flask integration with MySQL.
-
-##### Ameya Tajne
-- Tested the webapp, views, and dynamic operations.
-- Helped in debugging errors found during testing.
-- Provided visual documentation of the program's execution in the ReadMe file.
